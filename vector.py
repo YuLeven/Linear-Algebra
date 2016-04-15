@@ -43,16 +43,15 @@ class Vector(object):
             return [x for x in normalized]
         except ZeroDivisionError:
             raise Exception('Thou shall not divide by zero')
-        
+
     def dot(self, v):
-        dot_product = sum([x*y for x,y in zip(self.coordinates, v.coordinates)])
-        return dot_product
+        return sum([x*y for x,y in zip(self.coordinates, v.coordinates)])
 
     def angle(self, v):
         u1 = Vector(self.normalization())
         u2 = Vector(v.normalization())
         rad = math.acos(u1.dot(u2))
-        return [rad, rad * 180 / math.pi]
+        return ["%.3f" % x for x in [rad, rad * 180 / math.pi]]
 
     def is_zero(self, tolerance=1e-10):
         return self.magnitude() < tolerance
