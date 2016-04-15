@@ -54,21 +54,41 @@ class Vector(object):
         rad = math.acos(u1.dot(u2))
         return [rad, rad * 180 / math.pi]
 
+    def is_zero(self, tolerance=1e-10):
+        return self.magnitude() < tolerance
+
+    def parallel(self, v):
+        return ( self.is_zero() or
+                 v.is_zero() or
+                 self.angle(v)[0] == 0 or
+                 self.angle(v)[0] == math.pi )
 
 
-myVector1 = Vector([7.887,4.138])
-myVector2 = Vector([-8.802,6.776])
-myVector3 = Vector([-5.955,-4.904,-1.874])
-myVector4 = Vector([-4.496,-8.755,7.103])
-
-myVector5 = Vector([3.183, -7.627])
-myVector6 = Vector([-2.668, 5.319])
-
-myVector7 = Vector([7.35,0.221,5.188])
-myVector8 = Vector([2.751,8.259,3.985])
+    def orthogonal(self, v, tolerance=1e-10):
+        return abs(self.dot(v)) < tolerance
 
 
-print "%.3f" % myVector1.dot(myVector2)
-print "%.3f" % myVector3.dot(myVector4)
-print myVector5.angle(myVector6)
-print myVector7.angle(myVector8)
+      
+
+
+
+myVector1 = Vector([-7.579,-7.88])
+myVector2 = Vector([22.737,23.64])
+
+print myVector1.parallel(myVector2)
+print myVector1.orthogonal(myVector2)
+
+myVector1 = Vector([-2.029,9.97,4.172])
+myVector2 = Vector([-9.231,-6.639, -7.245])
+
+print myVector1.parallel(myVector2)
+print myVector1.orthogonal(myVector2)
+
+myVector1 = Vector([-2.328,-7.284, -1.214])
+myVector2 = Vector([-1.821,1.072,-2.94])
+
+print myVector1.parallel(myVector2)
+print myVector1.orthogonal(myVector2)
+
+myVector1 = Vector([2.118, 4.827])
+myVector2 = Vector([0,0])
