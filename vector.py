@@ -7,6 +7,8 @@ class Vector(object):
                 raise ValueError
             self.coordinates = tuple(coordinates)
             self.dimension = len(coordinates)
+            self.NO_UNIQUE_PARALLEL_COMPONENT_MSG = "NO_UNIQUE_PARALLEL_COMPONENT_MSG"
+            self.CANNOT_NORMALIZE_ZERO_VECTOR_MSG = "CANNOT_NORMALIZE_ZERO_VECTOR_MSG"
 
         except ValueError:
             raise ValueError('The coordinates must not be empty')
@@ -62,32 +64,53 @@ class Vector(object):
                  self.angle(v)[0] == 0 or
                  self.angle(v)[0] == math.pi )
 
-
     def orthogonal(self, v, tolerance=1e-10):
         return abs(self.dot(v)) < tolerance
 
+    def component_orthogonal_to(self, basis):
+        try:
+            projection = self.component_parallel_to(basis)
+            return self.minus(projection)
 
-      
+        except Exception as e:
+            if str(e) == self.NO_UNIQUE_PARALLEL_COMPONENT_MSG:
+                raise Exception(self.NO_UNIQUE_PARALLEL_COMPONENT_MSG)
+            else:
+                raise e
+
+    def component_parallel_to(self, basis):
+        try:
+            u = Vector(basis.normalization())
+            weight = self.dot(u)
+            return u.times_scalar(weight)
+
+        except Exception as e:
+            if str(e) == self.CANNOT_NORMALIZE_ZERO_VECTOR_MSG:
+                raise Exception(self.CANNOT_NORMALIZE_ZERO_VECTOR_MSG)
+            else:
+                raise e
+
+    def component(self, v):
+        normalizedV = Vector(v.normalization())
+        x = Vector(self.dot(normalizedV))
+        return x.dot(normalizedV)
 
 
+print '#1'
+myVector1 = Vector([3.039,1.879])
+myVector2 = Vector([0.825,2.036])
 
-myVector1 = Vector([-7.579,-7.88])
-myVector2 = Vector([22.737,23.64])
+print myVector1.component_parallel_to(myVector2)
 
-print myVector1.parallel(myVector2)
-print myVector1.orthogonal(myVector2)
+print '#2'
+v = Vector([-9.88, -3.264, -8.159])
+w = Vector([-2.155, -9.353, -9.473])
+print v.component_orthogonal_to(w)
 
-myVector1 = Vector([-2.029,9.97,4.172])
-myVector2 = Vector([-9.231,-6.639, -7.245])
-
-print myVector1.parallel(myVector2)
-print myVector1.orthogonal(myVector2)
-
-myVector1 = Vector([-2.328,-7.284, -1.214])
-myVector2 = Vector([-1.821,1.072,-2.94])
-
-print myVector1.parallel(myVector2)
-print myVector1.orthogonal(myVector2)
-
-myVector1 = Vector([2.118, 4.827])
-myVector2 = Vector([0,0])
+print '#3'
+v = Vector([3.009, -6.172, 3.692, -2.51])
+w = Vector([6.404, -9.144, 2.759, 8.718])
+vpar = v.component_parallel_to(w)
+vort = v.component_orthogonal_to(w)
+print "Parallel:", vpar
+print "Parallel:", vort
