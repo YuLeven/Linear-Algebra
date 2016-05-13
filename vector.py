@@ -118,7 +118,6 @@ class Vector(object):
         cross_product = self.cross_product(v)
         return cross_product.magnitude()
 
-
 print '#1'
 v = Vector([8.462, 7.893, -8.187])
 w = Vector([6.984, -5.975, 4.778])
