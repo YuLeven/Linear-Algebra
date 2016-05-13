@@ -1,4 +1,5 @@
 import math
+from decimal import *
 
 class Vector(object):
     def __init__(self, coordinates):
@@ -95,22 +96,38 @@ class Vector(object):
         x = Vector(self.dot(normalizedV))
         return x.dot(normalizedV)
 
+    def cross_product(self, v):
+        try:
+            x_1, y_1, z_1 = self.coordinates
+            x_2, y_2, z_2 = v.coordinates
+            new_coordinates = [
+                y_1 * z_2 - y_2 * z_1,
+                -(x_1*z_2 - x_2*z_1),
+                x_1*y_2 - x_2*y_1
+            ]
+            return Vector(new_coordinates)
+
+        except ValueError as e:
+            msg = str(e)
+            raise e
+
+    def area_of_triangle(self, v):
+        return self.area_of_parallelogram_with(v) / 2.0
+
+    def area_of_parallelogram_with(self, v):
+        cross_product = self.cross_product(v)
+        return cross_product.magnitude()
+
 
 print '#1'
-myVector1 = Vector([3.039,1.879])
-myVector2 = Vector([0.825,2.036])
+v = Vector([8.462, 7.893, -8.187])
+w = Vector([6.984, -5.975, 4.778])
+print v.cross_product(w)
 
-print myVector1.component_parallel_to(myVector2)
+v = Vector([-8.987, -9.838, 5.031])
+w = Vector([-4.268, -1.861, -8.866])
+print v.area_of_parallelogram_with(w)
 
-print '#2'
-v = Vector([-9.88, -3.264, -8.159])
-w = Vector([-2.155, -9.353, -9.473])
-print v.component_orthogonal_to(w)
-
-print '#3'
-v = Vector([3.009, -6.172, 3.692, -2.51])
-w = Vector([6.404, -9.144, 2.759, 8.718])
-vpar = v.component_parallel_to(w)
-vort = v.component_orthogonal_to(w)
-print "Parallel:", vpar
-print "Parallel:", vort
+v = Vector([1.5, 9.547, 3.691])
+w = Vector([-6.007, 0.124, 5.772])
+print v.area_of_triangle(w)
