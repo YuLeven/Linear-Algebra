@@ -102,8 +102,8 @@ class Vector(object):
             x_2, y_2, z_2 = v.coordinates
             new_coordinates = [
                 y_1 * z_2 - y_2 * z_1,
-                -(x_1*z_2 - x_2*z_1),
-                x_1*y_2 - x_2*y_1
+                - (x_1 * z_2 - x_2 * z_1),
+                x_1 * y_2 - x_2 * y_1
             ]
             return Vector(new_coordinates)
 
