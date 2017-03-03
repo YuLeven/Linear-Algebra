@@ -45,7 +45,7 @@ class Vector(object):
             normalized = [x / magnitude for x in self.coordinates]
             return [x for x in normalized]
         except ZeroDivisionError:
-            raise Exception('Thou shall not divide by zero')
+            raise Exception('Thou shalt not divide by zero')
 
     def dot(self, v):
         return sum([x*y for x,y in zip(self.coordinates, v.coordinates)])
