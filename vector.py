@@ -91,11 +91,6 @@ class Vector(object):
             else:
                 raise e
 
-    def component(self, v):
-        normalizedV = Vector(v.normalization())
-        x = Vector(self.dot(normalizedV))
-        return x.dot(normalizedV)
-
     def cross_product(self, v):
         try:
             x_1, y_1, z_1 = self.coordinates
