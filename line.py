@@ -7,8 +7,6 @@ getcontext().prec = 30
 
 class Line(object):
 
-    NO_NONZERO_ELTS_FOUND_MSG = 'No nonzero elements found'
-
     def __init__(self, normal_vector=None, constant_term=None):
         self.dimension = 2
 
@@ -25,21 +23,21 @@ class Line(object):
 
     def set_basepoint(self):
         try:
-            n = self.normal_vector
-            c = self.constant_term
+            # We create an array contaning N coordinates set to zero
             basepoint_coords = ['0'] * self.dimension
 
-            initial_index = Line.first_nonzero_index(n)
-            initial_coefficient = n[initial_index]
+            # To set a basepoint we get the first non-zero coordinate
+            # and set the other to zero after applying solving for it
+            # using the expression Ax + By = K
+            initial_index = Line.first_nonzero_index(self.normal_vector)
+            initial_coefficient = self.normal_vector[initial_index]
+            basepoint_coords[initial_index] = self.constant_term / initial_coefficient
 
-            basepoint_coords[initial_index] = c / initial_coefficient
+            # We set our basepoint using the value we found using our normal vector
             self.basepoint = Vector(basepoint_coords)
 
-        except Exception as e:
-            if str(e) == Line.NO_NONZERO_ELTS_FOUND_MSG:
-                self.basepoint = None
-            else:
-                raise e
+        except NoNonzeroElementsFound:
+            self.basepoint = None
 
     def __str__(self):
 
@@ -73,11 +71,8 @@ class Line(object):
                      for i in range(self.dimension) if round(n[i], num_decimal_places) != 0]
             output = ' '.join(terms)
 
-        except Exception as e:
-            if str(e) == self.NO_NONZERO_ELTS_FOUND_MSG:
-                output = '0'
-            else:
-                raise e
+        except NoNonzeroElementsFound:
+            output = '0'
 
         constant = round(self.constant_term, num_decimal_places)
         if constant % 1 == 0:
@@ -88,12 +83,16 @@ class Line(object):
 
     @staticmethod
     def first_nonzero_index(iterable):
-        for k, item in enumerate(iterable):
-            if not MyDecimal(item).is_near_zero():
-                return k
-        raise Exception(Line.NO_NONZERO_ELTS_FOUND_MSG)
+        for key, item in enumerate(iterable):
+            if not MyDecimal(item).is_near_zero(): 
+                return key
+        raise NoNonzeroElementsFound()
 
 
 class MyDecimal(Decimal):
     def is_near_zero(self, eps=1e-10):
         return abs(self) < eps
+
+class NoNonzeroElementsFound(ValueError):
+    """No nonzero elements found"""
+    pass
