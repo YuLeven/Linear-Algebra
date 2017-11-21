@@ -47,17 +47,17 @@ class Vector(object):
 
     def angle(self, vectorB):
         rad = math.acos(
-            self.normalization().dot(vectorB.normalization())
+            max(0, min(self.normalization().dot(vectorB.normalization()), 1))
         )
-        return ["%.3f" % x for x in [rad, rad * 180 / math.pi]]
+        return [rad, rad * 180 / math.pi]
 
     def is_zero(self, tolerance=1e-10):
         return self.magnitude() < tolerance
 
-    def parallel(self, vectorB):
-        return (self.is_zero()                    or
-                vectorB.is_zero()                 or
-                self.angle(vectorB)[0] == 0       or
+    def parallel(self, vectorB, tolerance=1e-10):
+        return (self.is_zero()                       or
+                vectorB.is_zero()                    or
+                self.angle(vectorB)[0] < tolerance   or
                 self.angle(vectorB)[0] == math.pi)
 
     def orthogonal(self, v, tolerance=1e-10):
