@@ -1,6 +1,7 @@
 import math
 from decimal import *
-
+from util import Util
+from error import NoUniqueParallelComponent
 
 class Vector(object):
     def __init__(self, coordinates):
@@ -51,13 +52,13 @@ class Vector(object):
         )
         return [rad, rad * 180 / math.pi]
 
-    def is_zero(self, tolerance=1e-10):
-        return self.magnitude() < tolerance
+    def is_zero(self):
+        return Util.is_nearly_zero(self.magnitude)
 
-    def parallel(self, vectorB, tolerance=1e-10):
-        return (self.is_zero()                       or
-                vectorB.is_zero()                    or
-                self.angle(vectorB)[0] < tolerance   or
+    def parallel(self, vectorB):
+        return (self.is_zero()                              or
+                vectorB.is_zero()                           or
+                Util.is_nearly_zero(self.angle(vectorB)[0]) or
                 self.angle(vectorB)[0] == math.pi)
 
     def orthogonal(self, v, tolerance=1e-10):
@@ -92,10 +93,3 @@ class Vector(object):
     def area_of_parallelogram_with(self, vectorB):
         return self.cross_product(vectorB).magnitude()
 
-
-class NoUniqueParallelComponent(ValueError):
-    """No unique parallel components where found"""
-    pass
-
-class CannotNormalizeZeroVector(ValueError):
-    """Cannot normalize the zero vector"""
