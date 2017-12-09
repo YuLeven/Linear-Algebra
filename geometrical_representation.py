@@ -3,13 +3,6 @@ from util import Util
 from vector import Vector
 
 class GeometricalRepresentation(object):
-    
-    @staticmethod
-    def first_nonzero_index(iterable):
-        for key, item in enumerate(iterable):
-            if not Util.is_nearly_zero(item): 
-                return key
-        raise NoNonzeroElementsFound()
 
     def __init__(self, normal_vector = None, constant_term = None, dimension = 2):
         self.dimension = dimension
@@ -43,6 +36,13 @@ class GeometricalRepresentation(object):
             self.basepoint = None
 
     @staticmethod
+    def first_nonzero_index(iterable):
+        for key, item in enumerate(iterable):
+            if not Util.is_nearly_zero(item): 
+                return key
+        raise NoNonzeroElementsFound()
+
+    @staticmethod
     def zero_vector(dimension):
         all_zeros = [0] * dimension
         return Vector(all_zeros)
@@ -70,13 +70,11 @@ class GeometricalRepresentation(object):
                 output += '{}'.format(abs(coefficient))
 
             return output
-
-        n = self.normal_vector
-
+        
         try:
-            initial_index = GeometricalRepresentation.first_nonzero_index(n)
-            terms = [write_coefficient(n[i], is_initial_term=(i==initial_index)) + 'x_{}'.format(i+1)
-                     for i in range(self.dimension) if round(n[i], num_decimal_places) != 0]
+            initial_index = GeometricalRepresentation.first_nonzero_index(self.normal_vector)
+            terms = [write_coefficient(self.normal_vector[i], is_initial_term=(i==initial_index)) + 'x_{}'.format(i+1)
+                     for i in range(self.dimension) if round(self.normal_vector[i], num_decimal_places) != 0]
             output = ' '.join(terms)
 
         except NoNonzeroElementsFound:
