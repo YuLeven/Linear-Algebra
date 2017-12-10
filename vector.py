@@ -1,5 +1,4 @@
 import math
-from decimal import *
 from util import Util
 from error import NoUniqueParallelComponent
 
@@ -34,11 +33,11 @@ class Vector(object):
 
     def magnitude(self):
         potencies = sum([x ** 2 for x in self.coordinates])
-        return math.sqrt(float(potencies))
+        return math.sqrt(potencies)
 
     def normalization(self):
         try:
-            magnitude = float(self.magnitude())
+            magnitude = self.magnitude()
             return Vector([x / magnitude for x in self.coordinates])
         except ZeroDivisionError:
             raise Exception('Thou shalt not divide by zero')
@@ -48,7 +47,7 @@ class Vector(object):
 
     def angle(self, vectorB):
         rad = math.acos(
-            max(0, min(self.normalization().dot(vectorB.normalization()), 1))
+            max(-1, min(self.normalization().dot(vectorB.normalization()), 1))
         )
         return [rad, rad * 180 / math.pi]
 
@@ -59,7 +58,7 @@ class Vector(object):
         return (self.is_zero()                              or
                 vectorB.is_zero()                           or
                 Util.is_nearly_zero(self.angle(vectorB)[0]) or
-                self.angle(vectorB)[0] == math.pi)
+                round(self.angle(vectorB)[0], 3) == round(math.pi, 3))
 
     def orthogonal(self, v, tolerance=1e-10):
         return abs(self.dot(v)) < tolerance

@@ -35,6 +35,20 @@ class GeometricalRepresentation(object):
         except NoNonzeroElementsFound:
             self.basepoint = None
 
+    def is_parallel_to(self, elementB):
+        return self.normal_vector.parallel(elementB.normal_vector)
+
+    def __eq__(self, elementB):
+        
+        if not self.is_parallel_to(elementB):
+            return False
+
+        # We subtract both basepoints to find the line between them
+        # If this vector is orthogonal to the normal vector of either lines or planes, then they're equal
+        base_a = self.basepoint
+        base_b = elementB.basepoint
+        return base_a.minus(base_b).orthogonal(self.normal_vector)
+
     @staticmethod
     def first_nonzero_index(iterable):
         for key, item in enumerate(iterable):
