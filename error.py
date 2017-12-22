@@ -8,3 +8,6 @@ class NoUniqueParallelComponent(ValueError):
 
 class CannotNormalizeZeroVector(ValueError):
     """Cannot normalize the zero vector"""
+
+class AllPlanesMustBeInSameDimension(ValueError):
+    """All planes must be in the same dimension"""

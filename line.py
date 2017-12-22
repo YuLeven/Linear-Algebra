@@ -1,4 +1,4 @@
-from decimal import Decimal, getcontext
+from decimal import getcontext
 from vector import Vector
 from util import Util
 from error import NoNonzeroElementsFound

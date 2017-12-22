@@ -86,9 +86,11 @@ class GeometricalRepresentation(object):
             return output
         
         try:
-            initial_index = GeometricalRepresentation.first_nonzero_index(self.normal_vector)
-            terms = [write_coefficient(self.normal_vector[i], is_initial_term=(i==initial_index)) + 'x_{}'.format(i+1)
-                     for i in range(self.dimension) if round(self.normal_vector[i], num_decimal_places) != 0]
+            coordinates = [x for x in self.normal_vector.coordinates]
+            initial_index = GeometricalRepresentation.first_nonzero_index(coordinates)            
+            terms = [write_coefficient(self.normal_vector.coordinates[i], is_initial_term=(i==initial_index)) + Util.get_term_letter_for_iteration(i)
+                     for i in range(self.dimension) if round(self.normal_vector.coordinates[i], num_decimal_places) != 0]
+
             output = ' '.join(terms)
 
         except NoNonzeroElementsFound:
