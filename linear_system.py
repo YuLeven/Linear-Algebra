@@ -3,6 +3,7 @@ from copy import deepcopy
 from error import NoNonzeroElementsFound, AllPlanesMustBeInSameDimension
 from vector import Vector
 from plane import Plane
+from util import Util
 
 getcontext().prec = 30
 
@@ -38,6 +39,46 @@ class LinearSystem(object):
         plane_to_be_added.set_basepoint()
 
         self.planes[row_to_add] = deepcopy(plane_to_add)
+
+    def compute_triangular_form(self):
+        system = deepcopy(self)
+        for row, equ in enumerate(system):
+            for col, term in enumerate(equ.normal_vector.coordinates):
+                # If the current term is zero
+                if Util.is_nearly_zero(term):
+                    # Try to swap it from a equation with a nonzero term
+                    if not system.swap_for_nonzero(row, col):
+                        continue
+                
+                # Use the current equation to clear this term in equations bellow
+                system.clear_coefficients_below(row, col)
+                break
+
+        return system
+
+    def swap_for_nonzero(self, row, col):
+        for equ_index in range(row + 1, len(self)):
+            coefficient = self[equ_index].normal_vector.coordinates[col]
+            # If the coefficient is not zero
+            if not Util.is_nearly_zero(coefficient):
+                # Swap it with the position of the caller
+                self.swap_rows(row, equ_index)
+                return True
+        
+        return False
+
+    def clear_coefficients_below(self, row, col):
+        # Get the term which will be used to clear equation terms bellow
+        base_term = self[row].normal_vector.coordinates[col]
+
+        for equ_index in range(row + 1, len(self)):
+            # Gets the term which will be cleared
+            term_to_clear = self[equ_index].normal_vector.coordinates[col]
+            # Calculates the coefficient how many times the current term has to be 
+            # multiplied in order to become equal to the term to clear. We multidiply it by -1
+            # since we'll be adding this terms.
+            clear_coefficient = (term_to_clear / base_term) * -1
+            self.add_multiple_times_row_to_row(clear_coefficient, row, equ_index)
 
     def indices_of_first_nonzero_terms_in_each_row(self):
         indices = [-1] * len(self)
