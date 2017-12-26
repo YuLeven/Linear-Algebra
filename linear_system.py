@@ -80,6 +80,37 @@ class LinearSystem(object):
             clear_coefficient = (term_to_clear / base_term) * -1
             self.add_multiple_times_row_to_row(clear_coefficient, row, equ_index)
 
+    def clear_coefficients_above(self, row, col):
+        for index in range(row)[::-1]:
+            clear_coefficient = self[index].normal_vector.coordinates[col] * -1
+            print self
+            self.add_multiple_times_row_to_row(clear_coefficient, row, index)
+            print self
+            print "-"
+
+    def compute_rref(self):
+        print self
+        system = self.compute_triangular_form()
+        print system
+        print "--"
+        pivot_indices = system.indices_of_first_nonzero_terms_in_each_row()
+
+        for index in range(len(system))[::-1]:
+            leading_term_index = pivot_indices[index]
+            
+            # Normalize and clear coefficients above if there's a matching pivotal index
+            if leading_term_index < 0:
+                continue
+
+            system.normalize_to_coefficient_one(index, leading_term_index)
+            system.clear_coefficients_above(index, leading_term_index)
+
+        return system
+
+    def normalize_to_coefficient_one(self, row, col):
+        coefficient = 1.0 / self[row].normal_vector.coordinates[col]
+        self.multiply_coefficient_and_row(coefficient, row)
+
     def indices_of_first_nonzero_terms_in_each_row(self):
         indices = [-1] * len(self)
         for index, plane in enumerate(self.planes):
