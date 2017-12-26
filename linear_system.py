@@ -1,6 +1,6 @@
 from decimal import getcontext
 from copy import deepcopy
-from error import NoNonzeroElementsFound, AllPlanesMustBeInSameDimension
+from error import NoNonzeroElementsFound, AllPlanesMustBeInSameDimension, NoSolution, InfiniteSolutions
 from vector import Vector
 from plane import Plane
 from util import Util
@@ -83,16 +83,10 @@ class LinearSystem(object):
     def clear_coefficients_above(self, row, col):
         for index in range(row)[::-1]:
             clear_coefficient = self[index].normal_vector.coordinates[col] * -1
-            print self
             self.add_multiple_times_row_to_row(clear_coefficient, row, index)
-            print self
-            print "-"
 
     def compute_rref(self):
-        print self
         system = self.compute_triangular_form()
-        print system
-        print "--"
         pivot_indices = system.indices_of_first_nonzero_terms_in_each_row()
 
         for index in range(len(system))[::-1]:
@@ -106,6 +100,32 @@ class LinearSystem(object):
             system.clear_coefficients_above(index, leading_term_index)
 
         return system
+
+    def compute_solution(self):
+        system = self.compute_rref()
+        
+        try:
+            system.assert_not_contradictory_equation()
+            system.assert_too_few_leading_variables()
+            return Vector([system.planes[i].constant_term for i in range(system.dimension)])
+        except Exception as error:
+            print error.message
+
+    def assert_not_contradictory_equation(self):
+        for plane in self.planes:
+            try:
+                plane.first_nonzero_index(plane.normal_vector.coordinates)
+            
+            except NoNonzeroElementsFound:
+                if Util.is_nearly_zero(plane.constant_term):
+                    raise NoSolution("The system has no solutions")
+
+    def assert_too_few_leading_variables(self):
+        leading_variables = self.indices_of_first_nonzero_terms_in_each_row()
+        total_ld_variables = len(filter(lambda x: x >= 0, leading_variables))
+
+        if total_ld_variables < self.dimension:
+            raise InfiniteSolutions("The system has infinite solutions")
 
     def normalize_to_coefficient_one(self, row, col):
         coefficient = 1.0 / self[row].normal_vector.coordinates[col]
