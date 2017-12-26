@@ -39,7 +39,6 @@ class GeometricalRepresentation(object):
         return self.normal_vector.parallel(elementB.normal_vector)
 
     def __eq__(self, elementB):
-        
         if not self.is_parallel_to(elementB):
             return False
 
@@ -47,6 +46,11 @@ class GeometricalRepresentation(object):
         # If this vector is orthogonal to the normal vector of either lines or planes, then they're equal
         base_a = self.basepoint
         base_b = elementB.basepoint
+
+        # If both elements have the same base point, they must be equal
+        if base_a == base_b:
+            return True
+
         return base_a.minus(base_b).orthogonal(self.normal_vector)
 
     @staticmethod

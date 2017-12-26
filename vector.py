@@ -37,8 +37,7 @@ class Vector(object):
 
     def normalization(self):
         try:
-            magnitude = self.magnitude()
-            return Vector([x / magnitude for x in self.coordinates])
+            return Vector([x / self.magnitude() for x in self.coordinates])
         except ZeroDivisionError:
             raise Exception('Thou shalt not divide by zero')
 
@@ -52,7 +51,7 @@ class Vector(object):
         return [rad, rad * 180 / math.pi]
 
     def is_zero(self):
-        return Util.is_nearly_zero(self.magnitude)
+        return Util.is_nearly_zero(self.magnitude())
 
     def parallel(self, vectorB):
         return (self.is_zero()                              or
